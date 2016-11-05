@@ -1,6 +1,6 @@
 import {List, Map} from 'immutable';
 import {expect} from 'chai';
-import {setEntries, next} from '../src/core';
+import {setEntries, next, vote} from '../src/core';
 import chai from 'chai';
 import chaiImmutable from 'chai-immutable';
 
@@ -11,7 +11,7 @@ describe('application logic', () => {
 
   describe('setEntries', () => {
 
-    it('converts to immutable', () => {
+    it('adds the entries to the state and converts to immutable', () => {
       const state = Map();
       const entries = ['Trainspotting', '28 Days Later'];
       const nextState = setEntries(state, entries);
@@ -36,5 +36,41 @@ describe('application logic', () => {
         }));
       });
     });
+
+    describe('vote', () => {
+
+      it('creates a talley for the voted entry', () => {
+        const state = Map({
+          vote: Map({
+            pair: List.of('Trainspotting', '28 Days Later')
+          }),
+          entries: List()
+        });
+      });
+
+      it('adds to existing tally for the voted entry', () => {
+   const state = Map({
+     vote: Map({
+       pair: List.of('Trainspotting', '28 Days Later'),
+       tally: Map({
+         'Trainspotting': 3,
+         '28 Days Later': 2
+       })
+     }),
+     entries: List()
+   });
+     const nextState = vote(state, 'Trainspotting');
+     expect(nextState).to.equal(Map({
+       vote: Map({
+         pair: List.of('Trainspotting', '28 Days Later'),
+         tally: Map({
+           'Trainspotting': 4,
+           '28 Days Later': 2
+         })
+       }),
+       entries: List()
+     }));
+   });
+  });
 
   });
